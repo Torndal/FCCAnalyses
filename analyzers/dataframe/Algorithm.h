@@ -25,7 +25,6 @@ struct getRP_combination{
   ROOT::VecOps::RVec<int> operator()(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in);
 };
 
-
 struct sphericityFit {
   sphericityFit(ROOT::VecOps::RVec<float> arg_px, ROOT::VecOps::RVec<float> arg_py, ROOT::VecOps::RVec<float> arg_pz);
   ROOT::VecOps::RVec<float> m_px;

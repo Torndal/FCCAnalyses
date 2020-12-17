@@ -120,7 +120,8 @@ ROOT::VecOps::RVec<float> getRP_phi(ROOT::VecOps::RVec<edm4hep::ReconstructedPar
 ROOT::VecOps::RVec<float> getRP_e(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) {
   ROOT::VecOps::RVec<float> result;
   for (auto & p: in) {
-    result.push_back(p.energy);
+    ROOT::Math::PxPyPzMVector lv(p.momentum.x, p.momentum.y, p.momentum.z, p.mass);
+    result.push_back(lv.E());
   }
   return result;
 }
@@ -218,7 +219,6 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>  selRP_pT::operator() (RO
   return result;
 }
 
-
 selRP_p::selRP_p(float arg_min_p) : m_min_p(arg_min_p) {};
 
 ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>  selRP_p::operator() (ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) {
@@ -243,6 +243,51 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>  selRP_charge::operator()
     if ((m_abs && abs(in[i].charge)==m_charge) || (m_charge==in[i].charge) ) {
       result.emplace_back(p);
     }
+  }
+  return result;
+}
+
+std::unordered_set<int> selector_HighestEnergyLepton(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, std::vector<float> RP2MC_pdg) {
+  std::unordered_set<int> result;
+  UInt_t nLepton=0;
+  float max=0;
+  int idx;
+  for (size_t i = 0; i < in.size(); ++i) {
+    if (abs(RP2MC_pdg[i])==11 || abs(RP2MC_pdg[i])==13) {
+      nLepton++;
+      auto & p =in[i];
+      ROOT::Math::PxPyPzMVector lv(p.momentum.x, p.momentum.y, p.momentum.z, p.mass);
+      if (nLepton==1) {
+	max=lv.E();
+	idx=i;
+      }
+      if (lv.E() > max) {
+	max=lv.E();
+	idx=i;
+      }
+    }
+  }
+  result.insert(idx);
+  return result;
+}
+
+std::unordered_set<int> selector_rest(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, std::unordered_set<int> idx) {
+  std::unordered_set<int> result;
+  for (size_t i = 0; i < in.size(); ++i) {
+    std::unordered_set<int>::const_iterator got = idx.find (i);
+    if ( got == idx.end() ) result.insert(i);
+  }
+  return result;
+}
+
+std::vector<edm4hep::ReconstructedParticleData> ParticleSetCreator(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, std::unordered_set<int> idx) {
+  std::vector<edm4hep::ReconstructedParticleData> result;
+  result.reserve(in.size());
+  for (size_t i = 0; i < in.size(); ++i) {
+    auto & p = in[i];
+    std::unordered_set<int>::const_iterator got = idx.find (i);
+    if ( got == idx.end() ) continue;
+    else result.emplace_back(p);
   }
   return result;
 }
@@ -281,5 +326,132 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> getAxisRP::operator()(ROO
 }
 
 
+float RPsetInvariantMass(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) {
+  float E=0;
+  float px=0;
+  float py=0;
+  float pz=0;
+  for (size_t i = 0; i < in.size(); ++i) {
+    auto & p = in[i];
+    ROOT::Math::PxPyPzMVector lv(p.momentum.x, p.momentum.y, p.momentum.z, p.mass);
+    E+=lv.E();
+    px+=p.momentum.x;
+    py+=p.momentum.y;
+    pz+=p.momentum.z;
+  }
+  float result = sqrt(pow(E,2)-pow(px,2)-pow(py,2)-pow(pz,2));
+  return result;
+  
+}
+/*
+float RPsetInvariantMass(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) {
+  float E=0;
+  float px=0;
+  float py=0;
+  float pz=0;
+  for (size_t i = 0; i < in.size(); ++i) {
+    auto & p = in[i];
+    TLorentzVector tlv;
+    tlv.SetXYZM(p.momentum.x, p.momentum.y, p.momentum.z, p.mass);
+    E+=tlv.E();
+    px+=p.momentum.x;
+    py+=p.momentum.y;
+    pz+=p.momentum.z;
+  }
+  float result = sqrt(pow(E,2)-pow(px,2)-pow(py,2)-pow(pz,2));
+  return result;
 
+}
+*/
+
+
+std::vector<float> alg_sphericity(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) {
+
+  // ------If number of particles is less than three: special treatment ??? NOT DONE YET
+
+  //-- Compute momentum tensor
+  TMatrixD TT(3,3);
+  TT.Zero();
+
+  /*
+  //--------Test vectors
+  std::vector< std::array<float,3> > vect;
+  //first vector
+  vect.push_back({1, 0, 0});
+  //second vector
+  vect.push_back({0, 1, 0});
+  //third vector
+  vect.push_back({0, 0, 1});
+
+  for (std::array<float, 3> p_i : vect) {
+    for (int a=0;a<3;a++) {
+      for (int b=0;b<3;b++) {
+        TT[a][b]+=p_i[a]*p_i[b];
+      }
+    }
+  }
+  // ------- 
+  */
+  
+  for (unsigned int i=0; i<in.size() ; i++) {
+    auto & p = in[i];
+    float P[3];
+    P[0]=p.momentum.x;
+    P[1]=p.momentum.y;
+    P[2]=p.momentum.z;
+    for (int I=0;I<3;I++) {
+      for (int K=0;K<I;K++){
+        TT[I][K]+=P[I]*P[K];
+      }
+    }
+  }
+  
+  TT[0][1]=TT[1][0];
+  TT[0][2]=TT[2][0];
+  TT[1][2]=TT[2][1];
+
+  //CALL VSCALE(A,ALPHA,X,N)   X(I)=A(I)*ALPHA   (I=1,..,N)
+  float Alpha=1./(TT[0][0]+TT[1][1]+TT[2][2]);
+  for (int I=0;I<3;I++) {
+    for (int K=0;K<3;K++){
+      TT[I][K]*=Alpha;
+    }
+  }
+const TMatrixDEigen eigen(TT);
+  TMatrixD eigenVal = eigen.GetEigenValues();
+  TMatrixD eigenVec = eigen.GetEigenVectors();
+  
+  std::vector<float> EVAL;
+  for (unsigned int i=0; i<3 ; i++) EVAL.push_back(eigenVal[i][i]);
+
+  // Sort the vector in descending order
+  std::vector<int> IND(3); //Saving index from sorting eigenvalues        
+  size_t n(0);
+  generate(begin(IND), end(IND), [&]{ return n++; });
+  sort(begin(IND),end(IND),[&](int i1, int i2) { return EVAL[i1] > EVAL[i2]; } );
+  
+  ///--- DON<C2><B4>T KNOW HOW TO CROSS CHECK FOR IMAGINARY NUMBERS????
+  // if (imaginary) continue;
+  std::vector<float> major; //major axis (sphericity axis) 
+  std::vector<float> semimajor; // semi-major axis
+  std::vector<float> minor; //minor axis
+  for (unsigned int i=0; i<3 ; i++){
+    major.push_back(eigenVec[i][IND[0]]);
+    semimajor.push_back(eigenVec[i][IND[1]]);
+    minor.push_back(eigenVec[i][IND[2]]);
+      }
+  float sphericity = 1.5*(1-EVAL[IND[0]]);
+  float aplanarity = 1.5*EVAL[IND[2]];
+  float planarity = EVAL[IND[2]]/EVAL[IND[1]];
+  /*
+  std::cout <<"major axis (sphericity axis) = (" << major[0] << ", " << major[1] << ", " << major[2] << ")" << std::endl;
+  std::cout <<"semi-major axis = (" << semimajor[0] << ", " << semimajor[1] << ", " << semimajor[2] << ")" << std::endl;
+  std::cout <<"minor axis = (" << minor[0] << ", " << minor[1] << ", " << minor[2] << ")" << std::endl;
+  std::cout << "sphericity = " << sphericity << std::endl;
+  std::cout << "aplanarity = " << aplanarity << std::endl;
+  std::cout << "planarity = " << planarity << std::endl;
+  */
+  
+  return major;
+}
 

@@ -4,11 +4,17 @@
 
 #include <cmath>
 #include <vector>
+#include <unordered_set>
 
+#include "Math/Vector4D.h"
 #include "TLorentzVector.h"
 #include "ROOT/RVec.hxx"
 #include "edm4hep/ReconstructedParticleData.h"
 #include "edm4hep/ParticleIDData.h"
+
+#include "TMatrixD.h"
+#include "TMatrixDEigen.h"
+#include "TVectorT.h"
 
 
 /// TO BE MOVED LATER
@@ -95,7 +101,6 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> mergeParticles(ROOT::VecO
 /// return the size of the input collection
 int getRP_n(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in);
 
-
 /// returns the bjet flavour
 ROOT::VecOps::RVec<bool> getJet_btag(ROOT::VecOps::RVec<int> index, ROOT::VecOps::RVec<edm4hep::ParticleIDData> pid, ROOT::VecOps::RVec<float> values); 
 
@@ -109,5 +114,17 @@ struct getAxisRP{
   ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> operator()(ROOT::VecOps::RVec<float> angle, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in);
 };
 
+/// return indices for a particle set of highest energy leptons
+std::unordered_set<int> selector_HighestEnergyLepton(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, std::vector<float> RP2MC_pdg);
 
+/// return indices for the remaining particle set
+std::unordered_set<int> selector_rest(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, std::unordered_set<int> idx);
+
+/// return particle set from some selector
+std::vector<edm4hep::ReconstructedParticleData> ParticleSetCreator(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, std::unordered_set<int> idx);
+
+/// return invariant mass of the input collection
+float RPsetInvariantMass(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in);
+
+std::vector<float> alg_sphericity(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in);
 #endif
