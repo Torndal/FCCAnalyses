@@ -22,7 +22,7 @@
 
 
 /** Jet clustering interface. This represents a set functions and utilities to perfom jet clustering from a list of  */
-//namespace JetClustering{
+namespace JetClustering{
 ///Jet Clustering interface
 struct clustering {
   clustering (int arg_jetalgo, float arg_radius, int arg_exclusive, float arg_cut);
@@ -66,6 +66,6 @@ ROOT::VecOps::RVec<float> getJet_phi(ROOT::VecOps::RVec<fastjet::PseudoJet> in);
 
 /// Get jet theta
 ROOT::VecOps::RVec<float> getJet_theta(ROOT::VecOps::RVec<fastjet::PseudoJet> in);
-//}
+}
 
 #endif

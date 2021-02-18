@@ -8,11 +8,18 @@ ROOT.gSystem.Load("libFCCAnalyses")
 ROOT.gErrorIgnoreLevel = ROOT.kFatal
 _edm  = ROOT.edm4hep.ReconstructedParticleData()
 _pod  = ROOT.podio.ObjectID()
-_fcc  = ROOT.getMC_px
+_fcc  = ROOT.dummyloader
 
 print ('edm4hep  ',_edm)
 print ('podio    ',_pod)
 print ('fccana   ',_fcc)
+
+
+#
+# Example file : /eos/experiment/fcc/ee/generation/DelphesEvents/fcc_tmp/p8_ee_Zuds_ecm91/events_199980034.root
+#    ( these events were generated at (0,0,0) i.e. no vertex smearing
+#
+
 
 class analysis():
 
@@ -32,29 +39,31 @@ class analysis():
         df2 = (self.df
 
                # MC event primary vertex
-               .Define("MC_PrimaryVertex",  "getMC_EventPrimaryVertex(21)( Particle )" )
+               .Define("MC_PrimaryVertex",  "MCParticle::get_EventPrimaryVertex(21)( Particle )" )
 
                # number of tracks
-               .Define("ntracks","get_nTracks(EFlowTrack_1)")
+               .Define("ntracks","getTK_n(EFlowTrack_1)")
 
                # Select tracks with d0 and z0 significance < 3 sigmas
 		   # note: d0 and z0 are defined w.r.t. (0,0,0)
 		   # hence do not use such criteria to select primary tracks
 		   # if the events were generated with a vertex distribution
-               .Define("SelTracks","selTracks(0.,3.,0.,3.)( ReconstructedParticles, EFlowTrack_1)")
+               .Define("SelTracks","Vertexing::selTracks(0.,3.,0.,3.)( ReconstructedParticles, EFlowTrack_1)")
                .Define("nSeltracks",  "getRP_n(SelTracks)")
                # Reconstruct the vertex from these tracks :
-               .Define("Vertex",  "VertexFitter( 1, SelTracks, EFlowTrack_1 )")	# primary vertex, in mm
+               .Define("VertexObject",  "Vertexing::VertexFitter( 1, SelTracks, EFlowTrack_1 )")
+               .Define("Vertex",  "get_VertexData( VertexObject )")    # primary vertex, in mm
                
                # Select primary tracks based on the matching to MC
 		  # This can be used  to select primary tracks when the
 		  # gen-level primary vertex  is not  (0,0,0)
                .Alias("MCRecoAssociations0", "MCRecoAssociations#0.index")
                .Alias("MCRecoAssociations1", "MCRecoAssociations#1.index")
-               .Define("PrimaryTracks",  "SelPrimaryTracks(MCRecoAssociations0,MCRecoAssociations1,ReconstructedParticles,Particle, MC_PrimaryVertex)" )
+               .Define("PrimaryTracks",  "Vertexing::SelPrimaryTracks(MCRecoAssociations0,MCRecoAssociations1,ReconstructedParticles,Particle, MC_PrimaryVertex)" )
                .Define("nPrimaryTracks", "getRP_n(PrimaryTracks)")
-               # Reconstruct the vertex from these primary tracks :
-               .Define("Vertex_primaryTracks",  "VertexFitter ( 1, PrimaryTracks, EFlowTrack_1) ")   # primary vertex, in mm
+               ## Reconstruct the vertex from these primary tracks :
+               .Define("VertexObject_primaryTracks",  "Vertexing::VertexFitter ( 1, PrimaryTracks, EFlowTrack_1) ")  
+               .Define("Vertex_primaryTracks",   "get_VertexData( VertexObject_primaryTracks )")   # primary vertex, in mm
 
         )
 

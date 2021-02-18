@@ -127,7 +127,7 @@ ROOT::VecOps::RVec<int> getJet_constituents(ROOT::VecOps::RVec<fastjet::PseudoJe
   return RPJetAssociations;
 }
 
-ROOT::VecOps::RVec<float> getJet_px(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
+ROOT::VecOps::RVec<float> JetClustering::getJet_px(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   ROOT::VecOps::RVec<float> result;
   for (auto & p: in) {
     result.push_back(p.px());
@@ -136,7 +136,7 @@ ROOT::VecOps::RVec<float> getJet_px(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
 }
 
 
-ROOT::VecOps::RVec<float> getJet_py(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
+ROOT::VecOps::RVec<float> JetClustering::getJet_py(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   ROOT::VecOps::RVec<float> result;
   for (auto & p: in) {
     result.push_back(p.py());
@@ -144,7 +144,7 @@ ROOT::VecOps::RVec<float> getJet_py(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   return result;
 }
 
-ROOT::VecOps::RVec<float> getJet_pz(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
+ROOT::VecOps::RVec<float> JetClustering::getJet_pz(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   ROOT::VecOps::RVec<float> result;
   for (auto & p: in) {
     result.push_back(p.pz());
@@ -152,7 +152,7 @@ ROOT::VecOps::RVec<float> getJet_pz(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   return result;
 }
 
-ROOT::VecOps::RVec<float> getJet_e(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
+ROOT::VecOps::RVec<float> JetClustering::getJet_e(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   ROOT::VecOps::RVec<float> result;
   for (auto & p: in) {
     result.push_back(p.E());
@@ -160,7 +160,7 @@ ROOT::VecOps::RVec<float> getJet_e(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   return result;
 }
 
-ROOT::VecOps::RVec<float> getJet_pt(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
+ROOT::VecOps::RVec<float> JetClustering::getJet_pt(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   ROOT::VecOps::RVec<float> result;
   for (auto & p: in) {
     result.push_back(p.pt());
@@ -168,7 +168,7 @@ ROOT::VecOps::RVec<float> getJet_pt(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   return result;
 }
 
-ROOT::VecOps::RVec<float> getJet_m(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
+ROOT::VecOps::RVec<float> JetClustering::getJet_m(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   ROOT::VecOps::RVec<float> result;
   for (auto & p: in) {
     result.push_back(p.m());
@@ -176,7 +176,7 @@ ROOT::VecOps::RVec<float> getJet_m(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   return result;
 }
 
-ROOT::VecOps::RVec<float> getJet_eta(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
+ROOT::VecOps::RVec<float> JetClustering::getJet_eta(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   ROOT::VecOps::RVec<float> result;
   for (auto & p: in) {
     result.push_back(p.eta());
@@ -184,7 +184,7 @@ ROOT::VecOps::RVec<float> getJet_eta(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   return result;
 }
 
-ROOT::VecOps::RVec<float> getJet_phi(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
+ROOT::VecOps::RVec<float> JetClustering::getJet_phi(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   ROOT::VecOps::RVec<float> result;
   for (auto & p: in) {
     result.push_back(p.phi());
@@ -192,7 +192,7 @@ ROOT::VecOps::RVec<float> getJet_phi(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   return result;
 }
 
-ROOT::VecOps::RVec<float> getJet_theta(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
+ROOT::VecOps::RVec<float> JetClustering::getJet_theta(ROOT::VecOps::RVec<fastjet::PseudoJet> in){
   ROOT::VecOps::RVec<float> result;
   for (auto & p: in) {
     result.push_back(p.theta());

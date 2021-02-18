@@ -114,6 +114,13 @@ struct getAxisRP{
   ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> operator()(ROOT::VecOps::RVec<float> angle, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in);
 };
 
+/// return the angular separations (min / max / average) between a collection of particles
+struct angular_separation {
+  angular_separation( int arg_delta); //  0, 1, 2 = max, min, average
+  int m_delta = 0;
+  float operator() (ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in) ;
+};
+
 /// return indices for a particle set of highest energy leptons
 std::unordered_set<int> selector_HighestEnergyLepton(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, ROOT::VecOps::RVec<float> RP2MC_pdg);
 
@@ -130,4 +137,5 @@ ROOT::VecOps::RVec<int> ParticleSetAssociation(ROOT::VecOps::RVec<edm4hep::Recon
 float RPsetInvariantMass(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in);
 
 std::vector<float> alg_sphericity(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in);
+
 #endif
