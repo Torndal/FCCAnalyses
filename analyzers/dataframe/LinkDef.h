@@ -37,6 +37,8 @@
 #pragma link C++ function mergeParticles;
 #pragma link C++ function get_n_particles;
 
+// Jets
+#pragma link C++ function getJet_px;
 
 //MC Particles
 #pragma link C++ function getMC_p;

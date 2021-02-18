@@ -115,13 +115,16 @@ struct getAxisRP{
 };
 
 /// return indices for a particle set of highest energy leptons
-std::unordered_set<int> selector_HighestEnergyLepton(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, std::vector<float> RP2MC_pdg);
+std::unordered_set<int> selector_HighestEnergyLepton(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, ROOT::VecOps::RVec<float> RP2MC_pdg);
 
 /// return indices for the remaining particle set
 std::unordered_set<int> selector_rest(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, std::unordered_set<int> idx);
 
 /// return particle set from some selector
 std::vector<edm4hep::ReconstructedParticleData> ParticleSetCreator(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, std::unordered_set<int> idx);
+
+/// return particle set index in full RP collection as a vector
+ROOT::VecOps::RVec<int> ParticleSetAssociation(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in,std::unordered_set<int> idx);
 
 /// return invariant mass of the input collection
 float RPsetInvariantMass(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in);

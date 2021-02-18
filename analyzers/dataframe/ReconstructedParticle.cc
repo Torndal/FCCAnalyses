@@ -247,7 +247,7 @@ ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>  selRP_charge::operator()
   return result;
 }
 
-std::unordered_set<int> selector_HighestEnergyLepton(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, std::vector<float> RP2MC_pdg) {
+std::unordered_set<int> selector_HighestEnergyLepton(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in, ROOT::VecOps::RVec<float> RP2MC_pdg) {
   std::unordered_set<int> result;
   UInt_t nLepton=0;
   float max=0;
@@ -292,6 +292,16 @@ std::vector<edm4hep::ReconstructedParticleData> ParticleSetCreator(ROOT::VecOps:
   return result;
 }
 
+ROOT::VecOps::RVec<int> ParticleSetAssociation(ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> in,std::unordered_set<int> idx) {
+  ROOT::VecOps::RVec<int> result{};
+  result.reserve(in.size());
+  for (size_t i = 0; i < in.size(); ++i) {
+    std::unordered_set<int>::const_iterator got = idx.find (i);
+    if ( got == idx.end() ) continue;
+    else result.push_back(i);
+  }
+  return result;
+}
 
 ROOT::VecOps::RVec<bool> getJet_btag(ROOT::VecOps::RVec<int> index, ROOT::VecOps::RVec<edm4hep::ParticleIDData> pid, ROOT::VecOps::RVec<float> values){
   ROOT::VecOps::RVec<bool> result;

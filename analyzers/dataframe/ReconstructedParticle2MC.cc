@@ -153,7 +153,6 @@ ROOT::VecOps::RVec<int> getRP2MC_parentid (ROOT::VecOps::RVec<int> recind, ROOT:
   return result;
 }
 
-
 ROOT::VecOps::RVec<float>  getRP2MC_p_func::operator() (ROOT::VecOps::RVec<int> recind, ROOT::VecOps::RVec<int> mcind, ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco,  ROOT::VecOps::RVec<edm4hep::MCParticleData> mc) {
   ROOT::VecOps::RVec<float> result;
   result.resize(reco.size(),-1.);

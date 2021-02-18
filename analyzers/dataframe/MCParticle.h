@@ -14,6 +14,9 @@
 #include "edm4hep/Vector2i.h"
 
 
+ROOT::VecOps::RVec<int> getMC_daughter(int daughterindex, ROOT::VecOps::RVec<edm4hep::MCParticleData> in,  ROOT::VecOps::RVec<int> ind);
+ROOT::VecOps::RVec<int> getMC_parent(int parentindex, ROOT::VecOps::RVec<edm4hep::MCParticleData> in,  ROOT::VecOps::RVec<int> ind);
+
 /// Filter events based on a MCParticles PDGID
 struct filterMC_pdgID {
   filterMC_pdgID(int arg_pdgid, bool arg_abs);

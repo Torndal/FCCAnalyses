@@ -1,6 +1,5 @@
 #include "MCParticle.h"
 
-
 ROOT::VecOps::RVec<float> getMC_pt(ROOT::VecOps::RVec<edm4hep::MCParticleData> in){
  ROOT::VecOps::RVec<float> result;
  for (size_t i = 0; i < in.size(); ++i) {
@@ -279,6 +278,33 @@ bool getMC_decay::operator() (ROOT::VecOps::RVec<edm4hep::MCParticleData> in,  R
   return result;
 }
 
+ROOT::VecOps::RVec<int> getMC_daughter(int daughterindex, ROOT::VecOps::RVec<edm4hep::MCParticleData> in,  ROOT::VecOps::RVec<int> ind){
+  ROOT::VecOps::RVec<int> result;
+  for (size_t i = 0; i < in.size(); ++i) {
+    if (daughterindex+1>in.at(i).daughters_end-in.at(i).daughters_begin) {
+      result.push_back(-999);
+    }
+    else {
+      result.push_back(ind.at(in.at(i).daughters_begin+daughterindex));
+    }
+  }
+  return result;
+}¢
+
+ROOT::VecOps::RVec<int> getMC_parent(int parentindex, ROOT::VecOps::RVec<edm4hep::MCParticleData> in,  ROOT::VecOps::RVec<int> ind){
+  ROOT::VecOps::RVec<int> result;
+  for (size_t i = 0; i < in.size(); ++i) {
+    if (parentindex+1>in.at(i).parents_end-in.at(i).parents_begin) {
+      result.push_back(-999);
+    }
+    else {
+      result.push_back(ind.at(in.at(i).parents_begin+parentindex));
+    }
+  }
+  return result;
+}
+
+  
 
 ROOT::VecOps::RVec<int> getMC_parentid(ROOT::VecOps::RVec<int> mcind, ROOT::VecOps::RVec<edm4hep::MCParticleData> mc, ROOT::VecOps::RVec<int> parents){
   ROOT::VecOps::RVec<int> result;
@@ -300,7 +326,7 @@ ROOT::VecOps::RVec<int> getMC_parentid(ROOT::VecOps::RVec<int> mcind, ROOT::VecO
     //std::cout << "mc ind " << mcind.at(i) << "  PDGID "<< mc.at(mcind.at(i)).PDG  << "  status  " << mc.at(mcind.at(i)).generatorStatus << std::endl;
     for (unsigned j = mc.at(mcind.at(i)).parents_begin; j != mc.at(mcind.at(i)).parents_end; ++j) {
       //std::cout << "   ==index " << j <<" parents " << parents.at(j) << "  PDGID "<< mc.at(parents.at(j)).PDG << "  status  " << mc.at(parents.at(j)).generatorStatus << std::endl;
-      // result.push_back(parents.at(j));
+      //result.push_back(parents.at(j));
     }
     //std::cout << mc.at(mcind.at(i)).parents_begin <<"---"<< mc.at(mcind.at(i)).parents_end<< std::endl;	
     if (mc.at(mcind.at(i)).parents_end - mc.at(mcind.at(i)).parents_begin>1) {
@@ -314,6 +340,7 @@ ROOT::VecOps::RVec<int> getMC_parentid(ROOT::VecOps::RVec<int> mcind, ROOT::VecO
   }
   return result;
 }
+
 
 
 getMC_tree::getMC_tree(int arg_index) : m_index(arg_index) {};

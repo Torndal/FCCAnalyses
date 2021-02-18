@@ -40,18 +40,6 @@ class analysis():
         string_vec.push_back('Particle')
 
         df2 = (self.df
-               .Define("MC_px",         "getMC_px(Particle)")
-               .Define("MC_py",         "getMC_py(Particle)")
-               .Define("MC_pz",         "getMC_pz(Particle)")
-               .Define("MC_p",          "getMC_p(Particle)")
-               .Define("MC_pdg",        "getMC_pdg(Particle)")
-               .Define("MC_charge",     "getMC_charge(Particle)")
-               .Define("MC_mass",       "getMC_mass(Particle)")
-               .Define("MC_e",          "getMC_e(Particle)")
-               .Define("MC_status",     "getMC_genStatus(Particle)")
-               .Define("MC_vertex_x",   "getMC_vertex_x(Particle)")
-               .Define("MC_vertex_y",   "getMC_vertex_y(Particle)")
-               .Define("MC_vertex_z",   "getMC_vertex_z(Particle)")
                
                .Define("RP_p",          "getRP_p(ReconstructedParticles)")
                .Define("RP_px",         "getRP_px(ReconstructedParticles)")
@@ -61,9 +49,6 @@ class analysis():
                .Define("RP_mass",       "getRP_mass(ReconstructedParticles)")
                .Define("RP_e",          "getRP_e(ReconstructedParticles)")
                
-               .Define("RPTRK_D0",      "getRP2TRK_D0(ReconstructedParticles, EFlowTrack_1)")
-               .Define("RPTRK_Z0",      "getRP2TRK_D0(ReconstructedParticles, EFlowTrack_1)")
-
                .Alias("MCRecoAssociations0", "MCRecoAssociations#0.index")
                .Alias("MCRecoAssociations1", "MCRecoAssociations#1.index")
                .Alias("Particle0", "Particle#0.index")
@@ -78,11 +63,6 @@ class analysis():
                #.Define('RPMC_charge',   "getRP2MC_charge(MCRecoAssociations0,MCRecoAssociations1,ReconstructedParticles,Particle)")
                #.Define('RPMC_mass',     "getRP2MC_mass(MCRecoAssociations0,MCRecoAssociations1,ReconstructedParticles,Particle)")
                .Define('RPMC_parentindex', "getMC_parentid(RPMC_index,Particle, Particle0)")
-               .Define('MC_daughter1', "getMC_daughter(0,Particle,Particle1)")
-               .Define('MC_daughter2', "getMC_daughter(1,Particle,Particle1)")
-               .Define('MC_parent1', "getMC_parent(0,Particle,Particle0)")
-               .Define('MC_parent2', "getMC_parent(1,Particle,Particle0)")
-
                
                .Define("MET_p",          "getRP_p(MissingET)")
                .Define("MET_px",         "getRP_px(MissingET)")
@@ -100,7 +80,6 @@ class analysis():
                
                .Define("Set_rest",       "selector_rest(ReconstructedParticles,Set_lepton)")
                .Define("RPrest",         "ParticleSetCreator(ReconstructedParticles, Set_rest)")
-               .Define("RPrest_association", "ParticleSetAssociation(ReconstructedParticles, Set_rest)")
                .Define("RPrest_invmass", "RPsetInvariantMass(RPrest)")
                .Define("RPrest_px",      "getRP_px(RPrest)")
                .Define("RPrest_py",      "getRP_py(RPrest)")
@@ -109,15 +88,12 @@ class analysis():
                .Define("RPrest_e",          "getRP_e(RPrest)")
                #.Define('RPMC_p',        match,string_vec)
 
-
                .Define('EVT_thrust',      'minimize_thrust("Minuit2","Migrad")(RP_px, RP_py, RP_pz)')
                .Define('EVT_thrust_val',  'EVT_thrust.at(0)')
-               .Define('EVT_thrust_x',    'EVT_thrust.at(1)')
-               .Define('EVT_thrust_x_err','EVT_thrust.at(2)')
-               .Define('EVT_thrust_y',    'EVT_thrust.at(3)')
-               .Define('EVT_thrust_y_err','EVT_thrust.at(4)')
-               .Define('EVT_thrust_z',    'EVT_thrust.at(5)')
-               .Define('EVT_thrust_z_err','EVT_thrust.at(6)')
+
+               .Define('EVTrest_thrust',      'minimize_thrust("Minuit2","Migrad")(RPrest_px, RPrest_py, RPrest_pz)')
+               .Define('EVTrest_thrust_val',  'EVTrest_thrust.at(0)')
+
                
                #.Define('EVT_thrust',     'minimize_thrust("Minuit2","Migrad")(RP_px, RP_py, RP_pz)')
                #.Define('RP_thrustangle', 'axisCosTheta(EVT_thrust, RP_px, RP_py, RP_pz)')
@@ -126,25 +102,16 @@ class analysis():
                #.Define('EVT_thrust_z',   "EVT_thrust.at(2)")
                #.Define('EVT_thrust_val', "EVT_thrust.at(3)")
                
-               .Define('EVT_sphericity',     'minimize_sphericity("Minuit2","Migrad")(RP_px, RP_py, RP_pz)')
-               .Define('EVT_sphericity_x',   "EVT_sphericity.at(0)")
-               .Define('EVT_sphericity_y',   "EVT_sphericity.at(1)")
-               .Define('EVT_sphericity_z',   "EVT_sphericity.at(2)")
-               .Define('EVT_sphericity_val', "EVT_sphericity.at(3)")
-               .Define('RP_sphericityangle', 'axisCosTheta(EVT_sphericity, RP_px, RP_py, RP_pz)')
+               #.Define('EVT_sphericity',     'minimize_sphericity("Minuit2","Migrad")(RP_px, RP_py, RP_pz)')
+               #.Define('EVT_sphericity_x',   "EVT_sphericity.at(0)")
+               #.Define('EVT_sphericity_y',   "EVT_sphericity.at(1)")
+               #.Define('EVT_sphericity_z',   "EVT_sphericity.at(2)")
+               #.Define('EVT_sphericity_val', "EVT_sphericity.at(3)")
+               #.Define('RP_sphericityangle', 'axisCosTheta(EVT_sphericity, RP_px, RP_py, RP_pz)')
 
                #.Define('RP_hemis0_mass',   "getAxisMass(0)(RP_thrustangle, RP_e, RP_px, RP_py, RP_pz)")
                #.Define('RP_hemis1_mass',   "getAxisMass(1)(RP_thrustangle, RP_e, RP_px, RP_py, RP_pz)")
-
-               .Define('EVTrest_thrust',     'minimize_thrust("Minuit2","Migrad")(RP_px, RP_py, RP_pz)')
-               .Define('EVTrest_thrust',      'minimize_thrust("Minuit2","Migrad")(RP_px, RP_py, RP_pz)')
-	       .Define('EVTrest_thrust_val',  'EVTrest_thrust.at(0)')
-               .Define('EVTrest_thrust_x',    'EVTrest_thrust.at(1)')
-               .Define('EVTrest_thrust_x_err','EVTrest_thrust.at(2)')
-               .Define('EVTrest_thrust_y',    'EVTrest_thrust.at(3)')
-               .Define('EVTrest_thrust_y_err','EVTrest_thrust.at(4)')
-               .Define('EVTrest_thrust_z',    'EVTrest_thrust.at(5)')
-               .Define('EVTrest_thrust_z_err','EVTrest_thrust.at(6)')
+               
 
                #.Define('EVTrest_thrust',     'minimize_thrust("Minuit2","Migrad")(RPrest_px, RPrest_py, RPrest_pz)')
                #.Define('RPrest_thrustangle', 'axisCosTheta(EVTrest_thrust, RPrest_px, RPrest_py, RPrest_pz)')
@@ -156,65 +123,8 @@ class analysis():
                #.Define('RPrest_hemis0_mass',   "getAxisMass(0)(RPrest_thrustangle, RPrest_e, RPrest_px, RPrest_py, RPrest_pz)")
                #.Define('RPrest_hemis1_mass',   "getAxisMass(1)(RPrest_thrustangle, RPrest_e, RPrest_px, RPrest_py, RPrest_pz)")
 
-               .Define("AlgoSpher", "alg_sphericity(ReconstructedParticles)")
+               #.Define("AlgoSpher", "alg_sphericity(ReconstructedParticles)")
 
-               #run jet clustering with all reconstructed particles. kt_algorithm, R=1, exclusive clustering, exactly 4
-
-               .Define("jets1_pair",           "clustering(1, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
-               .Define("jets1", "jets1_pair[0].second")
-               .Define("jets1_association", "jets1_pair[0].first")
-               .Define("jets1_px",        "getJet_px(jets1)")
-               .Define("jets1_py",        "getJet_py(jets1)")
-               .Define("jets1_pz",        "getJet_pz(jets1)")
-               .Define("jets1_e",         "getJet_e(jets1)")
-               
-               .Define("jets2_pair",           "clustering(2, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
-               .Define("jets2", "jets2_pair[0].second")
-               .Define("jets2_association", "jets2_pair[0].first")
-               .Define("jets2_px",        "getJet_px(jets2)")
-               .Define("jets2_py",        "getJet_py(jets2)")
-               .Define("jets2_pz",        "getJet_pz(jets2)")
-               .Define("jets2_e",        "getJet_e(jets2)")
-               
-               .Define("jets3_pair",           "clustering(3, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
-               .Define("jets3", "jets3_pair[0].second")
-               .Define("jets3_association", "jets3_pair[0].first")
-               .Define("jets3_px",        "getJet_px(jets3)")
-               .Define("jets3_py",        "getJet_py(jets3)")
-               .Define("jets3_pz",        "getJet_pz(jets3)")
-               .Define("jets3_e",        "getJet_e(jets3)")
-
-               .Define("jets4_pair",           "clustering(4, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
-               .Define("jets4", "jets4_pair[0].second")
-               .Define("jets4_association", "jets4_pair[0].first")
-               .Define("jets4_px",        "getJet_px(jets4)")
-               .Define("jets4_py",        "getJet_py(jets4)")
-               .Define("jets4_pz",        "getJet_pz(jets4)")
-               .Define("jets4_e",        "getJet_e(jets4)")
-
-               .Define("jets5_pair",           "clustering(5, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
-               .Define("jets5", "jets5_pair[0].second")
-               .Define("jets5_association", "jets5_pair[0].first")
-               .Define("jets5_px",        "getJet_px(jets5)")
-               .Define("jets5_py",        "getJet_py(jets5)")
-               .Define("jets5_pz",        "getJet_pz(jets5)")
-               .Define("jets5_e",        "getJet_e(jets5)")
-
-               .Define("jets6_pair",           "clustering(6, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
-               .Define("jets6", "jets6_pair[0].second")
-               .Define("jets6_association", "jets6_pair[0].first")
-               .Define("jets6_px",        "getJet_px(jets6)")
-               .Define("jets6_py",        "getJet_py(jets6)")
-               .Define("jets6_pz",        "getJet_pz(jets6)")
-               .Define("jets6_e",        "getJet_e(jets6)")
-
-               .Define("jets7_pair",           "clustering(7, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
-               .Define("jets7", "jets7_pair[0].second")
-               .Define("jets7_association", "jets7_pair[0].first")
-               .Define("jets7_px",        "getJet_px(jets7)")
-               .Define("jets7_py",        "getJet_py(jets7)")
-               .Define("jets7_pz",        "getJet_pz(jets7)")
-               .Define("jets7_e",        "getJet_e(jets7)")
 
 
                )
@@ -222,19 +132,6 @@ class analysis():
         # select branches for output file
         branchList = ROOT.vector('string')()
         for branchName in [
-                "MC_px",
-                "MC_py",
-                "MC_pz",
-                "MC_p",
-                "MC_pdg",
-                "MC_charge",
-                "MC_mass",
-                "MC_e",
-                "MC_status",
-                #"MC_vertex_x",
-                #"MC_vertex_y",
-                #"MC_vertex_z",
-
                 "RP_p",
                 "RP_px",
                 "RP_py",
@@ -257,10 +154,6 @@ class analysis():
                 "RPMC_index",
                 "RPMC_parentindex",
 
-                "MC_daughter1",
-                "MC_daughter2",
-                "MC_parent1",
-                "MC_parent2",
                 
                 "MET_p",
                 "MET_px",
@@ -273,7 +166,7 @@ class analysis():
                 "RPlepton_p",
                 "RPleptonMET_invmass",
                 "RPrest_invmass",
-                "RPrest_association",
+
                 
                 #"event_thrust_x",
                 #"event_thrust_y",
@@ -293,49 +186,6 @@ class analysis():
 
                 #"AlgoSpher",
 
-                #"jets1_pair",
-                "jets1_px",
-                "jets1_py",
-                "jets1_pz",
-                "jets1_e",
-                "jets1_association",
-
-                "jets2_px",
-                "jets2_py",
-                "jets2_pz",
-                "jets2_e",
-                "jets2_association",
-
-                "jets3_px",
-                "jets3_py",
-                "jets3_pz",
-                "jets3_e",
-                "jets3_association",
-
-                "jets4_px",
-                "jets4_py",
-                "jets4_pz",
-                "jets4_e",
-                "jets4_association",
-
-                "jets5_px",
-                "jets5_py",
-                "jets5_pz",
-                "jets5_e",
-                "jets5_association",
-
-                "jets6_px",
-                "jets6_py",
-                "jets6_pz",
-                "jets6_e",
-                "jets6_association",
-
-                "jets7_px",
-                "jets7_py",
-                "jets7_pz",
-                "jets7_e",
-                "jets7_association",
-
                 ]:
             branchList.push_back(branchName)
         df2.Snapshot("events", self.outname, branchList)
@@ -350,8 +200,8 @@ if __name__ == "__main__":
         print ("python ",sys.argv[0]," file.root")
         sys.exit(3)
     infile = sys.argv[1]
-    #outDir = '/eos/user/j/jutornda/FCCee/'+sys.argv[0].split('/')[1]+'/'
-    outDir = 'FCCee/'+sys.argv[0].split('/')[1]+'/'
+    outDir = '/eos/user/j/jutornda/FCCee/newThrust/'+sys.argv[0].split('/')[1]+'/'
+    #outDir = 'FCCee/'+sys.argv[0].split('/')[1]+'/'
     import os
     os.system("mkdir -p {}".format(outDir))
     outfile = outDir+infile.split('/')[-1]
