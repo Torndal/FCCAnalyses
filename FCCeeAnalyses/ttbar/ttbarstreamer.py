@@ -9,13 +9,15 @@ ROOT.gSystem.Load("libfastjet")
 ROOT.gErrorIgnoreLevel = ROOT.kFatal
 _edm  = ROOT.edm4hep.ReconstructedParticleData()
 _pod  = ROOT.podio.ObjectID()
-_fcc  = ROOT.getMC_px
-_fcc2  = ROOT.getRP2MC_p
+#_fcc  = ROOT.getMC_px
+#_fcc2  = ROOT.getRP2MC_p
+#Not in Namespace (works)
+_fcc  = ROOT.dummyloader
 
 print ('edm4hep  ',_edm)
 print ('podio    ',_pod)
 print ('fccana   ',_fcc)
-print ('fccana2  ',_fcc2)
+#print ('fccana2  ',_fcc2)
 
 
 class analysis():
@@ -40,19 +42,19 @@ class analysis():
         string_vec.push_back('Particle')
 
         df2 = (self.df
-               .Define("MC_px",         "getMC_px(Particle)")
-               .Define("MC_py",         "getMC_py(Particle)")
-               .Define("MC_pz",         "getMC_pz(Particle)")
-               .Define("MC_p",          "getMC_p(Particle)")
-               .Define("MC_pdg",        "getMC_pdg(Particle)")
-               .Define("MC_charge",     "getMC_charge(Particle)")
-               .Define("MC_mass",       "getMC_mass(Particle)")
-               .Define("MC_e",          "getMC_e(Particle)")
-               .Define("MC_status",     "getMC_genStatus(Particle)")
-               .Define("MC_vertex_x",   "getMC_vertex_x(Particle)")
-               .Define("MC_vertex_y",   "getMC_vertex_y(Particle)")
-               .Define("MC_vertex_z",   "getMC_vertex_z(Particle)")
-               
+               .Define("MC_px",         "MCParticle::get_px(Particle)")
+               .Define("MC_py",         "MCParticle::get_py(Particle)")
+               .Define("MC_pz",         "MCParticle::get_pz(Particle)")
+               .Define("MC_p",          "MCParticle::get_p(Particle)")
+               .Define("MC_pdg",        "MCParticle::get_pdg(Particle)")
+               .Define("MC_charge",     "MCParticle::get_charge(Particle)")
+               .Define("MC_mass",       "MCParticle::get_mass(Particle)")
+               .Define("MC_e",          "MCParticle::get_e(Particle)")
+               .Define("MC_status",     "MCParticle::get_genStatus(Particle)")
+               #.Define("MC_vertex_x",   "MCParticle::get_vertex_x(Particle)")
+               #.Define("MC_vertex_y",   "MCParticle::get_vertex_y(Particle)")
+               #.Define("MC_vertex_z",   "MCParticle::get_vertex_z(Particle)")
+
                .Define("RP_p",          "getRP_p(ReconstructedParticles)")
                .Define("RP_px",         "getRP_px(ReconstructedParticles)")
                .Define("RP_py",         "getRP_py(ReconstructedParticles)")
@@ -77,11 +79,11 @@ class analysis():
                .Define('RPMC_pdg',      "getRP2MC_pdg(MCRecoAssociations0,MCRecoAssociations1,ReconstructedParticles,Particle)")
                #.Define('RPMC_charge',   "getRP2MC_charge(MCRecoAssociations0,MCRecoAssociations1,ReconstructedParticles,Particle)")
                #.Define('RPMC_mass',     "getRP2MC_mass(MCRecoAssociations0,MCRecoAssociations1,ReconstructedParticles,Particle)")
-               .Define('RPMC_parentindex', "getMC_parentid(RPMC_index,Particle, Particle0)")
-               .Define('MC_daughter1', "getMC_daughter(0,Particle,Particle1)")
-               .Define('MC_daughter2', "getMC_daughter(1,Particle,Particle1)")
-               .Define('MC_parent1', "getMC_parent(0,Particle,Particle0)")
-               .Define('MC_parent2', "getMC_parent(1,Particle,Particle0)")
+               .Define('RPMC_parentindex', "MCParticle::get_parentid(RPMC_index,Particle, Particle0)")
+               .Define('MC_daughter1', "MCParticle::getMC_daughter(0,Particle,Particle1)")
+               .Define('MC_daughter2', "MCParticle::getMC_daughter(1,Particle,Particle1)")
+               .Define('MC_parent1', "MCParticle::getMC_parent(0,Particle,Particle0)")
+               .Define('MC_parent2', "MCParticle::getMC_parent(1,Particle,Particle0)")
 
                
                .Define("MET_p",          "getRP_p(MissingET)")
@@ -109,7 +111,13 @@ class analysis():
                .Define("RPrest_e",          "getRP_e(RPrest)")
                #.Define('RPMC_p',        match,string_vec)
 
-
+               .Define("Set_finalStates", "MCParticle::selector_finalStates(Particle, Set_lepton, RPMC_index)")
+               .Define("Particle_finalStates", "MCParticle::ParticleSetCreator(Particle, Set_finalStates)")
+               .Define("MCfinal_px", "MCParticle::get_px(Particle_finalStates)")
+               .Define("MCfinal_py", "MCParticle::get_py(Particle_finalStates)")
+               .Define("MCfinal_pz", "MCParticle::get_pz(Particle_finalStates)")
+               .Define("MCfinal_e",  "MCParticle::get_e(Particle_finalStates)")
+               
                .Define('EVT_thrust',      'minimize_thrust("Minuit2","Migrad")(RP_px, RP_py, RP_pz)')
                .Define('EVT_thrust_val',  'EVT_thrust.at(0)')
                .Define('EVT_thrust_x',    'EVT_thrust.at(1)')
@@ -137,8 +145,7 @@ class analysis():
                #.Define('RP_hemis1_mass',   "getAxisMass(1)(RP_thrustangle, RP_e, RP_px, RP_py, RP_pz)")
 
                .Define('EVTrest_thrust',     'minimize_thrust("Minuit2","Migrad")(RP_px, RP_py, RP_pz)')
-               .Define('EVTrest_thrust',      'minimize_thrust("Minuit2","Migrad")(RP_px, RP_py, RP_pz)')
-	       .Define('EVTrest_thrust_val',  'EVTrest_thrust.at(0)')
+               .Define('EVTrest_thrust_val',  'EVTrest_thrust.at(0)')
                .Define('EVTrest_thrust_x',    'EVTrest_thrust.at(1)')
                .Define('EVTrest_thrust_x_err','EVTrest_thrust.at(2)')
                .Define('EVTrest_thrust_y',    'EVTrest_thrust.at(3)')
@@ -160,61 +167,69 @@ class analysis():
 
                #run jet clustering with all reconstructed particles. kt_algorithm, R=1, exclusive clustering, exactly 4
 
-               .Define("jets1_pair",           "clustering(1, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
+               .Define("jets1_pair",           "JetClustering::clustering(1, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e)")
                .Define("jets1", "jets1_pair[0].second")
                .Define("jets1_association", "jets1_pair[0].first")
-               .Define("jets1_px",        "getJet_px(jets1)")
-               .Define("jets1_py",        "getJet_py(jets1)")
-               .Define("jets1_pz",        "getJet_pz(jets1)")
-               .Define("jets1_e",         "getJet_e(jets1)")
+               .Define("jets1_px",        "JetClustering::getJet_px(jets1)")
+               .Define("jets1_py",        "JetClustering::getJet_py(jets1)")
+               .Define("jets1_pz",        "JetClustering::getJet_pz(jets1)")
+               .Define("jets1_e",         "JetClustering::getJet_e(jets1)")
+
+               .Define("MCjets1_pair",           "JetClustering::clustering(1, 1.0, 3, 4)(MCfinal_px, MCfinal_py, MCfinal_pz, MCfinal_e)")
+               .Define("MCjets1", "MCjets1_pair[0].second")
+               .Define("MCjets1_association", "MCjets1_pair[0].first")
+               .Define("MCjets1_px",        "JetClustering::getJet_px(MCjets1)")
+               .Define("MCjets1_py",        "JetClustering::getJet_py(MCjets1)")
+               .Define("MCjets1_pz",        "JetClustering::getJet_pz(MCjets1)")
+               .Define("MCjets1_e",         "JetClustering::getJet_e(MCjets1)")
                
-               .Define("jets2_pair",           "clustering(2, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
+               .Define("jets2_pair",           "JetClustering::clustering(2, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e)")
                .Define("jets2", "jets2_pair[0].second")
                .Define("jets2_association", "jets2_pair[0].first")
-               .Define("jets2_px",        "getJet_px(jets2)")
-               .Define("jets2_py",        "getJet_py(jets2)")
-               .Define("jets2_pz",        "getJet_pz(jets2)")
-               .Define("jets2_e",        "getJet_e(jets2)")
+               .Define("jets2_px",        "JetClustering::getJet_px(jets2)")
+               .Define("jets2_py",        "JetClustering::getJet_py(jets2)")
+               .Define("jets2_pz",        "JetClustering::getJet_pz(jets2)")
+               .Define("jets2_e",        "JetClustering::getJet_e(jets2)")
                
-               .Define("jets3_pair",           "clustering(3, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
+               .Define("jets3_pair",           "JetClustering::clustering(3, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e)")
                .Define("jets3", "jets3_pair[0].second")
                .Define("jets3_association", "jets3_pair[0].first")
-               .Define("jets3_px",        "getJet_px(jets3)")
-               .Define("jets3_py",        "getJet_py(jets3)")
-               .Define("jets3_pz",        "getJet_pz(jets3)")
-               .Define("jets3_e",        "getJet_e(jets3)")
+               .Define("jets3_px",        "JetClustering::getJet_px(jets3)")
+               .Define("jets3_py",        "JetClustering::getJet_py(jets3)")
+               .Define("jets3_pz",        "JetClustering::getJet_pz(jets3)")
+               .Define("jets3_e",        "JetClustering::getJet_e(jets3)")
 
-               .Define("jets4_pair",           "clustering(4, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
+               .Define("jets4_pair",           "JetClustering::clustering(4, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e)")
                .Define("jets4", "jets4_pair[0].second")
                .Define("jets4_association", "jets4_pair[0].first")
-               .Define("jets4_px",        "getJet_px(jets4)")
-               .Define("jets4_py",        "getJet_py(jets4)")
-               .Define("jets4_pz",        "getJet_pz(jets4)")
-               .Define("jets4_e",        "getJet_e(jets4)")
+               .Define("jets4_px",        "JetClustering::getJet_px(jets4)")
+               .Define("jets4_py",        "JetClustering::getJet_py(jets4)")
+               .Define("jets4_pz",        "JetClustering::getJet_pz(jets4)")
+               .Define("jets4_e",        "JetClustering::getJet_e(jets4)")
 
-               .Define("jets5_pair",           "clustering(5, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
+               .Define("jets5_pair",           "JetClustering::clustering(5, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e)")
                .Define("jets5", "jets5_pair[0].second")
                .Define("jets5_association", "jets5_pair[0].first")
-               .Define("jets5_px",        "getJet_px(jets5)")
-               .Define("jets5_py",        "getJet_py(jets5)")
-               .Define("jets5_pz",        "getJet_pz(jets5)")
-               .Define("jets5_e",        "getJet_e(jets5)")
+               .Define("jets5_px",        "JetClustering::getJet_px(jets5)")
+               .Define("jets5_py",        "JetClustering::getJet_py(jets5)")
+               .Define("jets5_pz",        "JetClustering::getJet_pz(jets5)")
+               .Define("jets5_e",        "JetClustering::getJet_e(jets5)")
 
-               .Define("jets6_pair",           "clustering(6, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
+               .Define("jets6_pair",           "JetClustering::clustering(6, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e)")
                .Define("jets6", "jets6_pair[0].second")
                .Define("jets6_association", "jets6_pair[0].first")
-               .Define("jets6_px",        "getJet_px(jets6)")
-               .Define("jets6_py",        "getJet_py(jets6)")
-               .Define("jets6_pz",        "getJet_pz(jets6)")
-               .Define("jets6_e",        "getJet_e(jets6)")
+               .Define("jets6_px",        "JetClustering::getJet_px(jets6)")
+               .Define("jets6_py",        "JetClustering::getJet_py(jets6)")
+               .Define("jets6_pz",        "JetClustering::getJet_pz(jets6)")
+               .Define("jets6_e",        "JetClustering::getJet_e(jets6)")
 
-               .Define("jets7_pair",           "clustering(7, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e, RPrest_association)")
+               .Define("jets7_pair",           "JetClustering::clustering(7, 1.0, 3, 4)(RPrest_px, RPrest_py, RPrest_pz, RPrest_e)")
                .Define("jets7", "jets7_pair[0].second")
                .Define("jets7_association", "jets7_pair[0].first")
-               .Define("jets7_px",        "getJet_px(jets7)")
-               .Define("jets7_py",        "getJet_py(jets7)")
-               .Define("jets7_pz",        "getJet_pz(jets7)")
-               .Define("jets7_e",        "getJet_e(jets7)")
+               .Define("jets7_px",        "JetClustering::getJet_px(jets7)")
+               .Define("jets7_py",        "JetClustering::getJet_py(jets7)")
+               .Define("jets7_pz",        "JetClustering::getJet_pz(jets7)")
+               .Define("jets7_e",        "JetClustering::getJet_e(jets7)")
 
 
                )
@@ -299,6 +314,12 @@ class analysis():
                 "jets1_pz",
                 "jets1_e",
                 "jets1_association",
+
+                "MCjets1_px",
+                "MCjets1_py",
+                "MCjets1_pz",
+                "MCjets1_e",
+                "MCjets1_association",
 
                 "jets2_px",
                 "jets2_py",

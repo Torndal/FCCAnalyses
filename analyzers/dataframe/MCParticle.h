@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <vector>
+#include <unordered_set>
 
 #include "TLorentzVector.h"
 #include "ROOT/RVec.hxx"
@@ -201,6 +202,10 @@ namespace MCParticle{
 ROOT::VecOps::RVec<int> getMC_daughter(int daughterindex, ROOT::VecOps::RVec<edm4hep::MCParticleData> in,  ROOT::VecOps::RVec<int> ind);
 ROOT::VecOps::RVec<int> getMC_parent(int parentindex, ROOT::VecOps::RVec<edm4hep::MCParticleData> in,  ROOT::VecOps::RVec<int> ind);
 
+  
+std::unordered_set<int> selector_finalStates(ROOT::VecOps::RVec<edm4hep::MCParticleData> in, std::unordered_set<int> leptonidx, ROOT::VecOps::RVec<int> RP2MCidx);
+
+ROOT::VecOps::RVec<edm4hep::MCParticleData> ParticleSetCreator(ROOT::VecOps::RVec<edm4hep::MCParticleData> in, std::unordered_set<int> idx);
 
 }
 #endif

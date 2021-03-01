@@ -679,5 +679,39 @@ ROOT::VecOps::RVec<float> MCParticle::AngleBetweenTwoMCParticles( ROOT::VecOps::
 
 bool dummyloader(){return false;}
 
+std::unordered_set<int> MCParticle::selector_finalStates(ROOT::VecOps::RVec<edm4hep::MCParticleData> in, std::unordered_set<int> leptonidx, ROOT::VecOps::RVec<int> RP2MCidx) {
+  std::unordered_set<int> result;
 
+  ROOT::VecOps::RVec<int> RP2MCindex;
+  for (auto & idx: leptonidx) {
+    RP2MCindex.push_back(RP2MCidx[idx]);
+    //std::cout << "RP index for highest energy lepton" << idx << "RP2MC index for highest energy lepton" << RP2MCidx[idx] << std::endl;
+  }
+
+  if (RP2MCindex.size() > 1) std::cout << "More than one highest energy lepton found"<< std::endl;
+  
+  for (size_t i = 0; i < in.size(); ++i) {
+    auto & p = in[i];
+    if (p.generatorStatus!=1) continue;
+    if (abs(p.PDG)==12 || abs(p.PDG)==14 || abs(p.PDG)==16) continue;
+    if (i==RP2MCindex[0]) {
+      //std::cout << "Highest energy lepton removed" << std::endl;
+      continue;
+    }
+    result.insert(i);
+  }
+  return result;
+}
+
+ROOT::VecOps::RVec<edm4hep::MCParticleData> MCParticle::ParticleSetCreator(ROOT::VecOps::RVec<edm4hep::MCParticleData> in, std::unordered_set<int> idx) {
+  ROOT::VecOps::RVec<edm4hep::MCParticleData> result;
+  result.reserve(in.size());
+  for (size_t i = 0; i < in.size(); ++i) {
+    auto & p = in[i];
+    std::unordered_set<int>::const_iterator got = idx.find (i);
+    if ( got == idx.end() ) continue;
+    else result.emplace_back(p);
+  }
+  return result;
+}
 
