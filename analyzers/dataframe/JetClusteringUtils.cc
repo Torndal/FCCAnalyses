@@ -11,6 +11,16 @@ std::vector<std::vector<int>> JetClusteringUtils::get_constituents(FCCAnalysesJe
   return jets.constituents;
 }
 
+double JetClusteringUtils::get_dmerge(FCCAnalysesJet jets){
+  return jets.exclusive_dmerge;
+}
+
+double JetClusteringUtils::get_ymerge(FCCAnalysesJet jets){
+  return jets.exclusive_ymerge;
+}
+
+
+
 std::vector<fastjet::PseudoJet> JetClusteringUtils::set_pseudoJets(ROOT::VecOps::RVec<float> px, 
 								   ROOT::VecOps::RVec<float> py, 
 								   ROOT::VecOps::RVec<float> pz, 
@@ -106,14 +116,18 @@ FCCAnalysesJet JetClusteringUtils::initialise_FCCAnalysesJet(){
   JetClusteringUtils::FCCAnalysesJet result;
   ROOT::VecOps::RVec<fastjet::PseudoJet> jets;
   std::vector<std::vector<int>> constituents;
-
+  double exclusive_dmerge;
+  double exclusive_ymerge;
+  
   result.jets = jets;
   result.constituents = constituents;
-
+  result.exclusive_dmerge = exclusive_dmerge;
+  result.exclusive_ymerge = exclusive_ymerge;
+  
   return result;
 };
 
-FCCAnalysesJet JetClusteringUtils::build_FCCAnalysesJet(std::vector<fastjet::PseudoJet> in){
+FCCAnalysesJet JetClusteringUtils::build_FCCAnalysesJet(std::vector<fastjet::PseudoJet> in, fastjet::ClusterSequence & cs, int exclusive, float cut){
   JetClusteringUtils::FCCAnalysesJet result = JetClusteringUtils::initialise_FCCAnalysesJet();
   for (const auto& pjet : in) {
     result.jets.push_back(pjet);
@@ -125,10 +139,18 @@ FCCAnalysesJet JetClusteringUtils::build_FCCAnalysesJet(std::vector<fastjet::Pse
     }
     result.constituents.push_back(tmpvec);
   }
+
+  if (exclusive == 2 || exclusive == 3){
+    result.exclusive_dmerge = cs.exclusive_dmerge(int(cut));
+    result.exclusive_ymerge = cs.exclusive_ymerge(int(cut));
+  }
+  else {
+    result.exclusive_dmerge = -999;
+    result.exclusive_ymerge = -999;
+  }
+
   return result;
 }
-
-
 
 std::vector<fastjet::PseudoJet> JetClusteringUtils::build_jets(fastjet::ClusterSequence & cs, int exclusive, float cut, int sorted){
   std::vector<fastjet::PseudoJet> pjets;
@@ -149,7 +171,6 @@ std::vector<fastjet::PseudoJet> JetClusteringUtils::build_jets(fastjet::ClusterS
   }
   return pjets;
 }
-
 
 bool JetClusteringUtils::check(unsigned int n, int exclusive, float cut){
   if (exclusive>0 && n<=int(cut)) return false;

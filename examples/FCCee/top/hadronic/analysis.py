@@ -84,6 +84,8 @@ class analysis():
                .Define("jets_jade",           "JetClusteringUtils::get_pseudoJets(FCCAnalysesJets_jade)")
                #get the jets constituents out of the struct
                .Define("jetconstituents_jade","JetClusteringUtils::get_constituents(FCCAnalysesJets_jade)")
+               #get the ymin_{n,n+1} out of the struct
+               .Define("jetdmin_jade", "JetClusteringUtils::get_dmerge(FCCAnalysesJets_jade)")
                #get some variables
                .Define("jets_jade_px",        "JetClusteringUtils::get_px(jets_jade)")
                .Define("jets_jade_py",        "JetClusteringUtils::get_py(jets_jade)")
@@ -169,7 +171,7 @@ class analysis():
                 "jets_jade_btag",
                 "jets_jade_btag_true",
                 "jetconstituents_jade",
-               
+                "jetdmin_jade",
                 ]:
             branchList.push_back(branchName)
         df2.Snapshot("events", self.outname, branchList)
